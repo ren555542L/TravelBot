@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WanderAI Chat — Your AI Travel Companion</title>
+  <meta name="description" content="Chat with WanderAI — your intelligent GPT-4 travel assistant for personalized itineraries, tips, visa info and more." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="chat.css" />
+</head>
+<body class="chat-page">
+
+  <nav class="chat-navbar">
+    <div class="chat-nav-left">
+      <a href="index.html" class="back-btn" id="back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Home
+      </a>
+      <a href="index.html" class="chat-brand">
+        <span class="logo-icon">✈</span>
+        <span class="logo-text">WanderAI</span>
+      </a>
+      <div class="ai-status" id="ai-status">
+        <div class="status-dot"></div>
+        GPT-4 Online
+      </div>
+    </div>
+    <div class="chat-nav-right">
+      <span class="model-badge" id="model-badge">gpt-4o-mini</span>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle light/dark mode">🌙</button>
+      <button class="icon-btn" id="settings-btn" title="Settings" aria-label="Open settings">
+        ⚙️
+      </button>
+      <button class="icon-btn danger" id="clear-btn" title="Clear Chat" aria-label="Clear conversation">
+        🗑️
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══ LAYOUT ══ -->
+  <div class="chat-layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="chat-sidebar" id="chat-sidebar">
+
+      <div class="sidebar-top">
+        <button class="new-chat-btn" id="new-chat-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          New Chat
+        </button>
+      </div>
+
+      <p class="sidebar-section-label">Recent</p>
+      <div class="sidebar-chats" id="sidebar-chats">
+        <!-- History populated by JS -->
+      </div>
+
+      <div class="sidebar-quick-prompts">
+        <div class="quick-prompt-label">Quick Prompts</div>
+        <div class="quick-prompt-item" data-prompt="Plan a 7-day trip to Japan with a budget of $2000">
+          <span class="qp-icon">🗾</span>
+          7-day Japan trip plan
+        </div>
+        <div class="quick-prompt-item" data-prompt="What are the top 5 most beautiful beaches in Southeast Asia?">
+          <span class="qp-icon">🏖️</span>
+          Best beaches in SEA
+        </div>
+        <div class="quick-prompt-item" data-prompt="What visa do I need to visit Europe as an Indian citizen?">
+          <span class="qp-icon">📋</span>
+          Visa for Europe (India)
+        </div>
+        <div class="quick-prompt-item" data-prompt="What are the must-try street foods in Bangkok, Thailand?">
+          <span class="qp-icon">🍜</span>
+          Bangkok street food guide
+        </div>
+        <div class="quick-prompt-item" data-prompt="Give me a budget travel guide for Bali, Indonesia">
+          <span class="qp-icon">💰</span>
+          Budget Bali travel guide
+        </div>
+      </div>
+
+      <div class="sidebar-api-section">
+        <div class="api-input-label">
+          🔑 OpenAI API Key
+        </div>
+        <div class="api-key-wrap">
+          <input
+            type="password"
+            id="api-key-input"
+            placeholder="sk-..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="api-toggle-vis" id="api-toggle-vis" title="Show/hide key">👁</button>
+        </div>
+        <button class="api-save-btn" id="api-save-btn">Save Key</button>
+        <div class="api-key-status" id="api-key-status">No key set</div>
+      </div>
+
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="chat-main" id="chat-main">
+
+      <!-- Welcome Screen -->
+      <div class="chat-welcome" id="chat-welcome">
+        <div class="welcome-icon">✈️</div>
+        <h1 class="welcome-title">Where to next?</h1>
+        <p class="welcome-sub">
+          Ask me anything about travel — destinations, itineraries, visas, budgets, local tips, and more.
+        </p>
+        <div class="welcome-suggestions" id="welcome-suggestions">
+          <button class="suggestion-chip" data-msg="Plan a romantic 5-day trip to Paris for two people">
+            🗼 Plan a Paris trip
+          </button>
+          <button class="suggestion-chip" data-msg="What are the best things to do in Bali, Indonesia?">
+            🌴 Things to do in Bali
+          </button>
+          <button class="suggestion-chip" data-msg="What visa do I need to visit Japan from the USA?">
+            🇯🇵 Japan visa guide
+          </button>
+          <button class="suggestion-chip" data-msg="Give me a 10-day Southeast Asia backpacking itinerary under $1500">
+            🎒 SEA backpacking trip
+          </button>
+          <button class="suggestion-chip" data-msg="What are the safest countries to travel solo as a woman?">
+            👩 Solo female travel
+          </button>
+          <button class="suggestion-chip" data-msg="What's the best time to visit the Maldives?">
+            🏝️ Maldives best time
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Container -->
+      <div class="chat-messages" id="chat-messages"></div>
+
+      <!-- Input Area -->
+      <div class="chat-input-area">
+        <div class="input-wrap" id="input-wrap">
+          <div class="input-left">
+            <textarea
+              id="chat-input"
+              placeholder="Ask me anything about travel... (Shift+Enter for new line)"
+              rows="1"
+              maxlength="4000"
+              autocomplete="off"
+              spellcheck="true"
+            ></textarea>
+            <div class="input-footer">
+              <span class="input-hint">Press <kbd>Enter</kbd> to send</span>
+              <span class="char-counter" id="char-counter">0 / 4000</span>
+            </div>
+          </div>
+          <button class="voice-btn" id="voice-btn" title="Voice input" aria-label="Start voice input">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+          <button class="send-btn" id="send-btn" disabled aria-label="Send message">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+        <div class="input-meta">
+          <span>Powered by <strong>OpenAI GPT-4o-mini</strong></span>
+          <span>·</span>
+          <span>Add your API key in the sidebar to start</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ══ SETTINGS MODAL ══ -->
+  <div class="modal-overlay" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">⚙️ Chat Settings</h3>
+        <button class="modal-close" id="modal-close" aria-label="Close settings">✕</button>
+      </div>
+      <div class="modal-field">
+        <label for="modal-api-key">OpenAI API Key</label>
+        <input type="password" id="modal-api-key" placeholder="sk-..." autocomplete="off" />
+      </div>
+      <div class="modal-field">
+        <label for="modal-model">AI Model</label>
+        <select id="modal-model">
+          <option value="gpt-4o-mini">GPT-4o Mini (Fast & Affordable)</option>
+          <option value="gpt-4o">GPT-4o (Most Capable)</option>
+          <option value="gpt-4-turbo">GPT-4 Turbo</option>
+          <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fastest)</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label for="modal-temp">Response Style</label>
+        <select id="modal-temp">
+          <option value="0.4">Conservative (More factual)</option>
+          <option value="0.7" selected>Balanced</option>
+          <option value="1.0">Creative (More varied)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" id="modal-cancel">Cancel</button>
+        <button class="modal-btn-save" id="modal-save">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TOAST CONTAINER ══ -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="chat.js"></script>
+</body>
+</html>
